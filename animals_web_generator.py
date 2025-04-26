@@ -1,134 +1,105 @@
+"""
+Generates an HTML page with animal information cards from JSON data.
+"""
+
 import json
 
 # Constants
-ANIMALS_DATA_FILE = "animals_data.json"
-HTML_TEMPLATE_FILE = "animals_template.html"
-OUTPUT_HTML_FILE = "output.html"
-PLACEHOLDER = "__REPLACE_ANIMALS_INFO__"
+TEMPLATE_FILE = "animals_template.html"
+OUTPUT_FILE = "output.html"
+REPLACEMENT_STRING = "__REPLACE_ANIMALS_INFO__"
+STEP_SUMMARY_CONTENT = """
+<li class="cards__item">
+    <div class="card__title">Step Summary</div>
+    <p class="card__text">
+        You wrote your first HTML template, congratulations!<br>
+        If you open it in the browser, you should see something similar to this:<br><br>
+        <em>alt text</em><br><br>
+        Happy from the result? We hope you are not.<br>
+        Don’t be disappointed, in the next step we’ll fix that.
+    </p>
+</li>
+"""
 
-
-def load_json_data(file_path):
-    """
-    Loads JSON data from a given file path.
+def get_skin_types(animals_data):
+    """Extracts all unique skin types from animal data.
     
     Args:
-        file_path (str): Path to the JSON file.
+        animals_data (list): List of animal dictionaries
         
     Returns:
-        list: Parsed JSON content as a list of dictionaries.
+        list: Sorted list of unique skin types
     """
-    with open(file_path, "r") as f:
-        return json.load(f)
+    skin_types = set()
+    for animal in animals_data:
+        skin_type = animal.get("characteristics", {}).get("skin_type")
+        if skin_type:
+            skin_types.add(skin_type)
+    return sorted(skin_types)
 
-
-def load_html_template(file_path):
-    """
-    Loads HTML template content from a given file path.
-
+def serialize_animal(animal_data):
+    """Formats animal data into HTML card format.
+    
     Args:
-        file_path (str): Path to the HTML template.
-
+        animal_data (dict): Animal data dictionary
+        
     Returns:
-        str: HTML template content as a string.
+        str: Formatted HTML card as string
     """
-    with open(file_path, "r") as f:
-        return f.read()
-
-
-def get_skin_types(animals):
-    """
-    Gets all unique skin types from the animal data.
-
-    Args:
-        animals (list): List of animal dictionaries.
-
-    Returns:
-        list: Sorted list of unique skin types.
-    """
-    return sorted({
-        animal.get("characteristics", {}).get("skin_type", "Unknown")
-        for animal in animals
-    })
-
-
-def serialize_animal(animal):
-    """
-    Converts one animal's data into an HTML list item.
-
-    Args:
-        animal (dict): Dictionary containing animal data.
-
-    Returns:
-        str: HTML string of the animal's info.
-    """
-    name = animal.get("name", "Unknown")
-    taxonomy = animal.get("taxonomy", {})
-    characteristics = animal.get("characteristics", {})
-
-    scientific_name = taxonomy.get("scientific_name", "Unknown")
-    location = ", ".join(animal.get("locations", []))
-    distinctive = characteristics.get("distinctive_feature", "Not available")
-    lifespan = characteristics.get("lifespan", "Not available")
-    slogan = characteristics.get("slogan", "No slogan provided.")
-
-    return f"""
+    return f'''
     <li class="cards__item">
-        <div class="card__title">{name}</div>
-        <p class="card__text"><strong>Scientific Name:</strong> {scientific_name}</p>
-        <p class="card__text"><strong>Location:</strong> {location}</p>
-        <p class="card__text"><strong>Feature:</strong> {distinctive}</p>
-        <p class="card__text"><strong>Life Span:</strong> {lifespan}</p>
-        <p class="card__text"><strong>Slogan:</strong> {slogan}</p>
+        <div class="card__title">{animal_data.get("name", "Unknown")}</div>
+        <p class="card__text"><strong>Scientific Name:</strong> {animal_data.get("taxonomy", {}).get("scientific_name", "Unknown")}</p>
+        <p class="card__text"><strong>Location:</strong> {", ".join(animal_data.get("locations", []))}</p>
+        <p class="card__text"><strong>Feature:</strong> {animal_data.get("characteristics", {}).get("distinctive_feature", "Not available")}</p>
+        <p class="card__text"><strong>Life Span:</strong> {animal_data.get("characteristics", {}).get("lifespan", "Not available")}</p>
+        <p class="card__text"><strong>Slogan:</strong> {animal_data.get("characteristics", {}).get("slogan", "No slogan provided.")}</p>
     </li>
-    """
+    '''.strip()
 
-
-def generate_html(animals, template):
-    """
-    Generates the final HTML content by inserting all animal cards into the template.
-
+def generate_html(cards_content, template_path, output_path):
+    """Generates final HTML file by populating template.
+    
     Args:
-        animals (list): List of animal dictionaries.
-        template (str): HTML template string.
-
+        cards_content (str): Formatted HTML cards
+        template_path (str): Path to template file
+        output_path (str): Output file path
+        
     Returns:
-        str: Final HTML string with animal data inserted.
+        str: Path to generated HTML file
     """
-    animal_cards = "".join([serialize_animal(animal) for animal in animals])
-
-    summary_card = """
-    <li class="cards__item">
-        <div class="card__title">Step Summary</div>
-        <p class="card__text">
-            You wrote your first HTML template, congratulations!<br>
-            If you open it in the browser, you should see something similar to this:<br><br>
-            <em>alt text</em><br><br>
-            Happy from the result? We hope you are not.<br>
-            Don’t be disappointed, in the next step we’ll fix that.
-        </p>
-    </li>
-    """
-
-    return template.replace(PLACEHOLDER, animal_cards + summary_card)
-
+    with open(template_path, "r") as template_file:
+        template = template_file.read()
+    
+    populated_template = template.replace(REPLACEMENT_STRING, cards_content)
+    
+    with open(output_path, "w") as output_file:
+        output_file.write(populated_template)
+    
+    return output_path
 
 def main():
-    """
-    Main function to run the script.
-    """
-    animals = load_json_data(ANIMALS_DATA_FILE)
-    template = load_html_template(HTML_TEMPLATE_FILE)
-    final_html = generate_html(animals, template)
-
-    with open(OUTPUT_HTML_FILE, "w") as f:
-        f.write(final_html)
-
-    print(f"✅ Web page generated: {OUTPUT_HTML_FILE}")
-
-    # Optional: print available skin types
-    skin_types = get_skin_types(animals)
-    print("👀 Available Skin Types:", ", ".join(skin_types))
-
+    """Main execution flow for HTML generation."""
+    # Load data
+    with open("animals_data.json", "r") as data_file:
+        animals = json.load(data_file)
+    
+    # Generate animal cards
+    animal_cards = [serialize_animal(animal) for animal in animals]
+    
+    # Add step summary card
+    animal_cards.append(STEP_SUMMARY_CONTENT.strip())
+    
+    # Generate final HTML
+    html_path = generate_html(
+        "\n".join(animal_cards),
+        TEMPLATE_FILE,
+        OUTPUT_FILE
+    )
+    
+    # Show summary
+    print(f"✅ Web page generated: {html_path}")
+    print(f"📊 Found skin types: {', '.join(get_skin_types(animals))}")
 
 if __name__ == "__main__":
     main()
