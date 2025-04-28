@@ -58,22 +58,13 @@ def serialize_animal(animal_data):
     '''.strip()
 
 def generate_html(cards_content, template_path, output_path):
-    """Generates final HTML file by populating template.
-    
-    Args:
-        cards_content (str): Formatted HTML cards
-        template_path (str): Path to template file
-        output_path (str): Output file path
-        
-    Returns:
-        str: Path to generated HTML file
-    """
-    with open(template_path, "r") as template_file:
+    """Generates final HTML file by populating template."""
+    with open(template_path, "r", encoding="utf-8") as template_file:
         template = template_file.read()
     
     populated_template = template.replace(REPLACEMENT_STRING, cards_content)
     
-    with open(output_path, "w") as output_file:
+    with open(output_path, "w", encoding="utf-8") as output_file:
         output_file.write(populated_template)
     
     return output_path
@@ -81,7 +72,7 @@ def generate_html(cards_content, template_path, output_path):
 def main():
     """Main execution flow for HTML generation."""
     # Load data
-    with open("animals_data.json", "r") as data_file:
+    with open("animals_data.json", "r", encoding="utf-8") as data_file:
         animals = json.load(data_file)
     
     # Generate animal cards
@@ -100,6 +91,3 @@ def main():
     # Show summary
     print(f"✅ Web page generated: {html_path}")
     print(f"📊 Found skin types: {', '.join(get_skin_types(animals))}")
-
-if __name__ == "__main__":
-    main()
