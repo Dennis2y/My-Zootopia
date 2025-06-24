@@ -27,7 +27,7 @@ To use this project, Run the following command:
 
 python animals_web_generator.py
 
-Ex. Enter a name of animal: cat
+Ex. Enter a name of animal: dog
 
 View the output:
 
