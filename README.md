@@ -8,7 +8,7 @@ Template Usage: Utilizes an HTML template for consistent styling.
 🛠️ Installation
 To install this project, Clone the Repository:
 
-git clone https://github.com/shinegit1/Zootopia-with-API.git
+https://github.com/Dennis2y/My-Zootopia.git
 
 cd Zootopia-with-API
 
@@ -27,7 +27,7 @@ To use this project, Run the following command:
 
 python animals_web_generator.py
 
-Ex. Enter a name of animal: lion
+Ex. Enter a name of animal: cat
 
 View the output:
 
@@ -35,12 +35,12 @@ Open the generated animals.html file in your web browser to see the list of anim
 
 📁 Project Structure
 Zootopia-with-API/
-├── animals_template.html       # HTML template for the default page
-├── animals.html                # HTML template for the ouput page
-├── animals_web_generator.py    # Main script to fetch data and generate HTML
-├── data_fetcher.py             # Module to handle API requests
-├── requirements.txt            # Python dependencies
-└── README.md                   # Project documentation
+├── animals_template.html      
+├── animals.html                
+├── animals_web_generator.py    
+├── data_fetcher.py             
+├── requirements.txt            
+└── README.md                  
 🐍 Dependencies
 Python 3.x
 Requests library
